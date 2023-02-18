@@ -1,0 +1,97 @@
+package engine;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL40;
+import org.lwjgl.system.MemoryUtil;
+
+public class Window {
+
+    private int width, height;
+    private String title;
+    private static long window;
+
+    private static float lastFrametime;
+    private static float deltaFrametime;
+
+    public Window(int width, int height, String title) {
+        this.width = width;
+        this.height = height;
+        this.title = title;
+    }
+
+    public void init() {
+        if (!GLFW.glfwInit())
+            throw new IllegalStateException("Failed to initialize GLFW");
+        System.out.println("GLFW initialized");
+
+        GLFW.glfwDefaultWindowHints();
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL40.GL_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 4);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL40.GL_TRUE);
+
+        window = GLFW.glfwCreateWindow(this.width, this.height, this.title, MemoryUtil.NULL, MemoryUtil.NULL);
+
+        if (window == MemoryUtil.NULL)
+            throw new RuntimeException("Failed to create GLFW window");
+
+        GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        GLFW.glfwSetWindowPos(window, (vidMode.width() - width) >> 1, (vidMode.height() - height) >> 1);
+
+        GLFW.glfwMakeContextCurrent(window);
+
+        GLFW.glfwSwapInterval(1);
+
+        GLFW.glfwShowWindow(window);
+
+        GL.createCapabilities();
+
+        GL40.glEnable(GL40.GL_DEPTH_TEST);
+        GL40.glEnable(GL40.GL_STENCIL_TEST);
+        GL40.glEnable(GL40.GL_CULL_FACE);
+        GL40.glCullFace(GL40.GL_BACK);
+
+        System.out.println("\nWindow created");
+        System.out.println("Resolution : " + this.width + "x" + this.height);
+        lastFrametime = getCurrentTime();
+    }
+
+    public void update() {
+        GLFW.glfwSwapBuffers(window);
+        GLFW.glfwPollEvents();
+        float currentFrametime = getCurrentTime();
+        deltaFrametime = currentFrametime - lastFrametime;
+        lastFrametime = currentFrametime;
+    }
+
+    public void cleanup() {
+
+        GLFW.glfwDestroyWindow(window);
+        GLFW.glfwTerminate();
+        System.out.println("\nWindow cleanup successfully");
+    }
+
+    public boolean shouldClose() {
+        return GLFW.glfwWindowShouldClose(window);
+    }
+
+    public static long getWindow() {
+        return window;
+    }
+
+    private static float getCurrentTime() {
+        return (float) GLFW.glfwGetTime();
+    }
+
+    public static float getDeltaFrametimeMS() {
+        return deltaFrametime;
+    }
+
+    public static float getDeltaFrametimeS() {
+        return deltaFrametime * 1000;
+    }
+
+}
