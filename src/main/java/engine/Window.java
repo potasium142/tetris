@@ -10,10 +10,7 @@ public class Window {
 
     private int width, height;
     private String title;
-    private static long window;
-
-    private static float lastFrametime;
-    private static float deltaFrametime;
+    private long window;
 
     public Window(int width, int height, String title) {
         this.width = width;
@@ -27,16 +24,20 @@ public class Window {
         System.out.println("GLFW initialized");
 
         GLFW.glfwDefaultWindowHints();
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL40.GL_FALSE);
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, 0);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 4);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL40.GL_TRUE);
 
         window = GLFW.glfwCreateWindow(this.width, this.height, this.title, MemoryUtil.NULL, MemoryUtil.NULL);
 
         if (window == MemoryUtil.NULL)
             throw new RuntimeException("Failed to create GLFW window");
+
+        // GLFW.glfwSetFramebufferSizeCallback(window, ((window, width, height) -> {
+        // this.width = width;
+        // this.height = height;
+        // }));
 
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         GLFW.glfwSetWindowPos(window, (vidMode.width() - width) >> 1, (vidMode.height() - height) >> 1);
@@ -56,19 +57,14 @@ public class Window {
 
         System.out.println("\nWindow created");
         System.out.println("Resolution : " + this.width + "x" + this.height);
-        lastFrametime = getCurrentTime();
     }
 
     public void update() {
         GLFW.glfwSwapBuffers(window);
         GLFW.glfwPollEvents();
-        float currentFrametime = getCurrentTime();
-        deltaFrametime = currentFrametime - lastFrametime;
-        lastFrametime = currentFrametime;
     }
 
     public void cleanup() {
-
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         System.out.println("\nWindow cleanup successfully");
@@ -76,22 +72,6 @@ public class Window {
 
     public boolean shouldClose() {
         return GLFW.glfwWindowShouldClose(window);
-    }
-
-    public static long getWindow() {
-        return window;
-    }
-
-    private static float getCurrentTime() {
-        return (float) GLFW.glfwGetTime();
-    }
-
-    public static float getDeltaFrametimeMS() {
-        return deltaFrametime;
-    }
-
-    public static float getDeltaFrametimeS() {
-        return deltaFrametime * 1000;
     }
 
 }
