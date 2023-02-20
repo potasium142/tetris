@@ -17,7 +17,26 @@ public class ObjectLoader {
     private List<Integer> vbos = new ArrayList<Integer>();
     private List<Integer> textures = new ArrayList<Integer>();
 
-    public Object loadMesh(float[] vertices, int[] indices, float[] textureCoordinates) {
+    public Object loadMesh2D(float[] vertices, float[] textureCoordinates) {
+        int vaoID = GL40.glGenVertexArrays();
+        int vboID = GL40.glGenBuffers();
+        vaos.add(vaoID);
+        vbos.add(vboID);
+
+        GL40.glBindVertexArray(vaoID);
+        GL40.glBindBuffer(GL40.GL_ELEMENT_ARRAY_BUFFER, vboID);
+        // IntBuffer buffer = storeDataInIntBuffer(indices);
+        // GL40.glBufferData(GL40.GL_ELEMENT_ARRAY_BUFFER, buffer, GL40.GL_STATIC_DRAW);
+
+        storeDataInAttributeList(0, 2, vertices);
+        storeDataInAttributeList(1, 2, textureCoordinates);
+
+        GL40.glBindVertexArray(0);
+
+        return new Object(vaoID, vertices.length / 2);
+    }
+
+    public Object loadMesh3D(float[] vertices, int indices[], float[] textureCoordinates) {
         int vaoID = GL40.glGenVertexArrays();
         int vboID = GL40.glGenBuffers();
         vaos.add(vaoID);
@@ -33,10 +52,10 @@ public class ObjectLoader {
 
         GL40.glBindVertexArray(0);
 
-        return new Object(vaoID, indices.length);
+        return new Object(vaoID, vertices.length / 2);
     }
 
-    public int loadTexture(String filePath) throws Exception {
+    public int[] loadTexture(String filePath) throws Exception {
         int width, height;
         ByteBuffer buffer;
         MemoryStack stack = MemoryStack.stackPush();
@@ -63,7 +82,7 @@ public class ObjectLoader {
         GL40.glGenerateMipmap(GL40.GL_TEXTURE_2D);
         STBImage.stbi_image_free(buffer);
 
-        return textureID;
+        return new int[] { textureID, width, height };
 
     }
 

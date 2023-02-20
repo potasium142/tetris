@@ -2,37 +2,51 @@ package game.object.background;
 
 import engine.Object;
 import engine.ObjectLoader;
+import engine.Renderer;
+import engine.Shader;
+import game.GV;
 
 public class Background {
-        private ObjectLoader loader;
+        private Renderer renderer;
+        private Shader shader = new BackgroundShader("./src/main/java/game/object/background/vert.vert",
+                        "./src/main/java/game/object/background/frag.frag");
 
-        public Background(ObjectLoader objLoader) throws Exception {
-                this.loader = objLoader;
-                this.background = loader.loadMesh(vertices, indices, textureCoordinates);
-                background.textureID = loader.loadTexture(backgroundPath);
+        public Background(ObjectLoader objLoader, Renderer renderer) throws Exception {
+                this.renderer = renderer;
+                int[] textureAttribute = objLoader.loadTexture(GV.backgroundPath);
 
+                float w = (GV.width * 2) / (float) textureAttribute[1];
+                float h = (GV.height * 2) / (float) textureAttribute[2];
+
+                float finalRatio = w < h ? w : h;
+
+                w /= finalRatio;
+                h /= finalRatio;
+
+                vertices = new float[] {
+                                -h, w,
+                                -h, -w,
+                                h, w,
+                                h, -w,
+                };
+
+                this.background = objLoader.loadMesh2D(vertices, textureCoordinates);
+                background.textureID = textureAttribute[0];
         }
 
-        private final float[] vertices = {
-                        -1f, 1f, -1f, // v0
-                        -1f, -1f, -1f, // v1
-                        1f, -1f, -1f, // v2
-                        1f, 1f, -1f,// v3
-        };
-
-        private final int[] indices = {
-                        0, 1, 3, // top left triangle (v0, v1, v3)
-                        3, 1, 2// bottom right triangle (v3, v1, v2)
-        };
+        private float[] vertices;
 
         private final float[] textureCoordinates = {
                         0, 0,
                         0, 1,
-                        1, 1,
-                        1, 0
+                        1, 0,
+                        1, 1
         };
 
-        private final String backgroundPath = "./src/main/asset/background.png";
+        public void render() {
+                renderer.render(shader, background);
+        }
+
         public Object background;
 
 }

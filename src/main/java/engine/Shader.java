@@ -3,29 +3,56 @@ package engine;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL40;
 
-public class Shader {
-    private int programID;
+public abstract class Shader {
+    protected int programID;
     private int vertexShaderID, fragmentShaderID;
     private int unifrom_UV;
+    private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public Shader(String vertShaderPath, String fragShaderPath) throws Exception {
         this.programID = GL40.glCreateProgram();
         this.vertexShaderID = createShader(vertShaderPath, GL40.GL_VERTEX_SHADER);
         this.vertexShaderID = createShader(fragShaderPath, GL40.GL_FRAGMENT_SHADER);
 
-        GL40.glBindAttribLocation(programID, 0, "fragTextureCoord");
+        bindAttribute();
 
         GL40.glLinkProgram(programID);
         GL40.glValidateProgram(programID);
 
         unifrom_UV = createUnifrom("textureSampler");
+
+        initUnifrom();
     }
 
-    private int createUnifrom(String unifromName) throws Exception {
+    public abstract void bindAttribute();
+
+    public abstract void initUnifrom();
+
+    public void unifromFloat(int location, float value) {
+        GL40.glUniform1f(location, value);
+    }
+
+    public void unifromInt(int location, int value) {
+        GL40.glUniform1d(location, value);
+    }
+
+    public void unifromVec2D(int location, float x, float y) {
+        GL40.glUniform2f(location, x, y);
+    }
+
+    protected int createUnifrom(String unifromName) {
         return GL40.glGetUniformLocation(programID, unifromName);
+    }
+
+    protected void unifromMatrix(int location, Matrix4f matrix) {
+        matrix.get(matrixBuffer);
+        GL40.glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
     private int createShader(String filePath, int shaderType) throws Exception {

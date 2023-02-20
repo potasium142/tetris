@@ -50,7 +50,7 @@ public class Window {
 
         GL.createCapabilities();
 
-        GL40.glEnable(GL40.GL_DEPTH_TEST);
+        // GL40.glEnable(GL40.GL_DEPTH_TEST);
         GL40.glEnable(GL40.GL_STENCIL_TEST);
         GL40.glEnable(GL40.GL_CULL_FACE);
         GL40.glCullFace(GL40.GL_BACK);
@@ -65,6 +65,7 @@ public class Window {
     }
 
     public void cleanup() {
+
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         System.out.println("\nWindow cleanup successfully");
