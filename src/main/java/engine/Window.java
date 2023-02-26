@@ -7,10 +7,11 @@ import org.lwjgl.opengl.GL40;
 import org.lwjgl.system.MemoryUtil;
 
 public class Window {
-
+    private double lastFrametime;
+    private double deltaFrametime;
     private int width, height;
     private String title;
-    private long window;
+    protected long window;
 
     public Window(int width, int height, String title) {
         this.width = width;
@@ -62,6 +63,10 @@ public class Window {
     public void update() {
         GLFW.glfwSwapBuffers(window);
         GLFW.glfwPollEvents();
+
+        double currentFrametime = getCurrentTime();
+        deltaFrametime = currentFrametime - lastFrametime;
+        lastFrametime = currentFrametime;
     }
 
     public void cleanup() {
@@ -73,6 +78,18 @@ public class Window {
 
     public boolean shouldClose() {
         return GLFW.glfwWindowShouldClose(window);
+    }
+
+    private double getCurrentTime() {
+        return GLFW.glfwGetTime();
+    }
+
+    public double getDeltaFrametimeMS() {
+        return deltaFrametime;
+    }
+
+    public double getDeltaFrametimeS() {
+        return deltaFrametime * 1000;
     }
 
 }

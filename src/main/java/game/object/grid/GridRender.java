@@ -1,20 +1,20 @@
 package game.object.grid;
 
-import engine.ObjectLoader;
-import engine.Renderer;
-
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL40;
 
 import engine.Object;
+import engine.ObjectLoader;
+import engine.Renderer;
 import game.GV;
 
-public class Grid {
+public class GridRender {
     private GridShader shader;
 
     // logic run on 10*40 grid, render 10*20 grid
-    private int gridState[][] = new int[10][41];
+
+    public int gridState[][] = new int[11][25];
 
     private float o12 = (float) 1 / 12;
 
@@ -37,13 +37,6 @@ public class Grid {
             o12, 1
     };
 
-    // private final float[] vertices = {
-    // -1f, 1f,
-    // -1f, -1f,
-
-    // 1f, 1f,
-    // 1f, -1f,
-    // };
     private final float[] vertices = {
             -x, y,
             -x, -y,
@@ -65,15 +58,17 @@ public class Grid {
 
         GL40.glActiveTexture(GL40.GL_TEXTURE);
         GL40.glBindTexture(GL40.GL_TEXTURE_2D, grid.textureID);
-        for (int i = 1; i <= 10; i++) {
-            for (int j = 1; j <= 20; j++) {
+
+        for (int i = 1; i < 11; i++) {
+            for (int j = 1; j < 20; j++) {
                 Matrix4f matrix4f = createUITransformationMatrix(xOffset + i * x * 2, yOffset + j * y * 2);
-                shader.setTitleIndex(7);
+
+                shader.setTitleIndex(gridState[i][j] + 7);
+
                 shader.loadTransformation(matrix4f);
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
             }
         }
-
         GL40.glDisable(GL40.GL_BLEND);
 
         GL40.glDisableVertexAttribArray(0);
@@ -83,11 +78,11 @@ public class Grid {
         shader.stop();
     }
 
-    public Grid(ObjectLoader objectLoader, Renderer renderer) throws Exception {
+    public GridRender(ObjectLoader objectLoader, Renderer renderer) throws Exception {
         this.shader = new GridShader("./src/main/java/game/object/grid/vert.vert",
                 "./src/main/java/game/object/grid/frag.frag");
 
-        int[] textureAttribute = objectLoader.loadTexture(GV.tetriminoTexture);
+        int[] textureAttribute = objectLoader.loadTexture(GV.tetromino);
 
         this.grid = objectLoader.loadMesh2D(vertices, textureCoordinates);
         grid.textureID = textureAttribute[0];
@@ -103,4 +98,5 @@ public class Grid {
     }
 
     private Object grid;
+
 }

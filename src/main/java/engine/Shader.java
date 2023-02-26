@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL40;
 public abstract class Shader {
     protected int programID;
     private int vertexShaderID, fragmentShaderID;
-    private int unifrom_UV;
     private FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public Shader(String vertShaderPath, String fragShaderPath) throws Exception {
@@ -25,7 +24,7 @@ public abstract class Shader {
         GL40.glLinkProgram(programID);
         GL40.glValidateProgram(programID);
 
-        unifrom_UV = createUnifrom("textureSampler");
+        createUnifrom("textureSampler");
 
         initUnifrom();
     }
