@@ -11,7 +11,8 @@ public class Window {
     private double deltaFrametime;
     private int width, height;
     private String title;
-    protected long window;
+    public long window;
+    double timer;
 
     public Window(int width, int height, String title) {
         this.width = width;
@@ -20,6 +21,7 @@ public class Window {
     }
 
     public void init() {
+
         if (!GLFW.glfwInit())
             throw new IllegalStateException("Failed to initialize GLFW");
         System.out.println("GLFW initialized");
@@ -51,7 +53,6 @@ public class Window {
 
         GL.createCapabilities();
 
-        // GL40.glEnable(GL40.GL_DEPTH_TEST);
         GL40.glEnable(GL40.GL_STENCIL_TEST);
         GL40.glEnable(GL40.GL_CULL_FACE);
         GL40.glCullFace(GL40.GL_BACK);
@@ -64,13 +65,12 @@ public class Window {
         GLFW.glfwSwapBuffers(window);
         GLFW.glfwPollEvents();
 
-        double currentFrametime = getCurrentTime();
+        double currentFrametime = GLFW.glfwGetTime();
         deltaFrametime = currentFrametime - lastFrametime;
         lastFrametime = currentFrametime;
     }
 
     public void cleanup() {
-
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
         System.out.println("\nWindow cleanup successfully");
@@ -80,16 +80,8 @@ public class Window {
         return GLFW.glfwWindowShouldClose(window);
     }
 
-    private double getCurrentTime() {
-        return GLFW.glfwGetTime();
-    }
-
     public double getDeltaFrametimeMS() {
         return deltaFrametime;
-    }
-
-    public double getDeltaFrametimeS() {
-        return deltaFrametime * 1000;
     }
 
 }

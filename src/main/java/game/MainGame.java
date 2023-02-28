@@ -19,8 +19,6 @@ public class MainGame {
         Window window = new Window(GV.width, GV.height, GV.title);
         window.init();
 
-        Keyboard keyboard = new Keyboard(window);
-
         Renderer renderer = new Renderer();
 
         ObjectLoader loader = new ObjectLoader();
@@ -28,7 +26,9 @@ public class MainGame {
         Background background = new Background(loader, renderer);
         GridRender grid = new GridRender(loader, renderer);
 
-        Field field = new Field(grid, keyboard);
+        Keyboard keyboard = new Keyboard(window);
+        Field field = new Field(grid, keyboard, window);
+        keyboard.field = field;
 
         keyboard.start();
 
@@ -44,9 +44,9 @@ public class MainGame {
         }
 
         {
-            keyboard.cleanup();
             loader.cleanup();
             window.cleanup();
+            System.exit(0);
         }
     }
 }
