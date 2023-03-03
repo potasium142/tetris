@@ -47,7 +47,7 @@ public class Window {
 
         GLFW.glfwMakeContextCurrent(window);
 
-        GLFW.glfwSwapInterval(1);
+        GLFW.glfwSwapInterval(10);
 
         GLFW.glfwShowWindow(window);
 
