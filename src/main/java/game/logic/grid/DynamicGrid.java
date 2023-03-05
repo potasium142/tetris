@@ -8,10 +8,13 @@ import engine.ObjectLoader;
 import engine.Renderer;
 import game.GV;
 import game.object.grid.GridRender;
-import game.object.tetromino.T;
+import game.object.tetromino.Bag;
+import game.object.tetromino.Tetromino;
 
 public class DynamicGrid extends GridRender implements Runnable {
-    public T t = new T();
+    public Tetromino tetromino;
+
+    private Bag bag = new Bag();
 
     private StaticGrid staticGrid;
 
@@ -41,31 +44,31 @@ public class DynamicGrid extends GridRender implements Runnable {
 
     @Override
     protected void renderGrid() {
-        for (int x = 0; x < t.gridSize; x++) {
-            for (int y = 0; y < t.gridSize; y++) {
+        for (int x = 0; x < tetromino.gridSize; x++) {
+            for (int y = 0; y < tetromino.gridSize; y++) {
                 Matrix4f matrix4f = createUITransformationMatrix(xOffset + (x + xStaticCoord) * xCoord * 2,
                         yOffset + (y + staticGhostHeight) * yCoord * 2);
 
-                int currentTitle = t.rotation[currentRotation][y][x];
+                int currentTitle = tetromino.rotation[currentRotation][y][x];
 
                 if (currentTitle == 0)
                     continue;
 
-                shader.setTitleIndex(currentTitle + 9);
+                shader.setTitleIndex(8);
 
                 shader.setUnifromDataMatrix(matrix4f);
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
             }
-            for (int y = 0; y < t.gridSize; y++) {
+            for (int y = 0; y < tetromino.gridSize; y++) {
                 Matrix4f matrix4f = createUITransformationMatrix(xOffset + (x + xStaticCoord) * xCoord * 2,
                         yOffset + (y + yStaticCoord) * yCoord * 2);
 
-                int currentTitle = t.rotation[currentRotation][y][x];
+                int currentTitle = tetromino.rotation[currentRotation][y][x];
 
                 if (currentTitle == 0)
                     continue;
 
-                shader.setTitleIndex(currentTitle + 7);
+                shader.setTitleIndex(currentTitle - 1);
 
                 shader.setUnifromDataMatrix(matrix4f);
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
@@ -121,9 +124,11 @@ public class DynamicGrid extends GridRender implements Runnable {
 
     private boolean placementCheck(int xPos, int yPos) {
         try {
-            for (int y = 0; y < t.gridSize; y++) {
-                for (int x = 0; x < t.gridSize; x++) {
-                    if (t.rotation[nextRotation][y][x]
+            for (int y = 0; y < tetromino.gridSize; y++) {
+                for (int x = 0; x < tetromino.gridSize; x++) {
+                    if (tetromino.rotation[nextRotation][y][x] == 0)
+                        continue;
+                    if (tetromino.rotation[nextRotation][y][x]
                             * staticGrid.gridLogic[yPos + y][xPos + x] != 0)
                         return false;
 
@@ -136,33 +141,34 @@ public class DynamicGrid extends GridRender implements Runnable {
     }
 
     public void placeTetromino() {
-        for (int y = 0; y < t.gridSize; y++) {
-            for (int x = 0; x < t.gridSize; x++) {
-                staticGrid.gridLogic[dynamicGhostHeight + y][xStaticCoord + x] += t.rotation[nextRotation][y][x];
+        for (int y = 0; y < tetromino.gridSize; y++) {
+            for (int x = 0; x < tetromino.gridSize; x++) {
+                if (tetromino.rotation[nextRotation][y][x] == 0)
+                    continue;
+                staticGrid.gridLogic[dynamicGhostHeight + y][xStaticCoord
+                        + x] += tetromino.rotation[nextRotation][y][x];
             }
         }
         resetPiece();
     }
 
     private void resetPiece() {
+        tetromino = bag.bag.poll();
+        bag.checkBag();
         currentRotation = 2;
         nextRotation = 2;
 
-        xDynamicCoord = 4 - (t.gridSize >> 1);
+        xDynamicCoord = 4 - (tetromino.gridSize >> 1);
         yDynamicCoord = 19;
-        xStaticCoord = 4 - (t.gridSize >> 1);
+        xStaticCoord = 4 - (tetromino.gridSize >> 1);
         yStaticCoord = 19;
         currentRotation = 0;
         dynamicGhostHeight = yStaticCoord;
     }
 
     private void ghostPiece() {
-        while (true) {
-            if (placementCheck(xDynamicCoord, dynamicGhostHeight - 1)) {
-                dynamicGhostHeight--;
-            } else {
-                break;
-            }
+        while (placementCheck(xDynamicCoord, dynamicGhostHeight - 1)) {
+            dynamicGhostHeight--;
         }
     }
 }

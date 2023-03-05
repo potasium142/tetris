@@ -36,9 +36,9 @@ public class MainGame {
                 keyboard.start();
                 GL40.glClear(GL40.GL_COLOR_BUFFER_BIT | GL40.GL_DEPTH_BUFFER_BIT);
 
-                staticGrid.startLogic();
-                dynamicGrid.startLogic();
                 keyboard.start();
+                dynamicGrid.startLogic();
+                staticGrid.startLogic();
 
                 background.render();
                 staticGrid.render();

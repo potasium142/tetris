@@ -32,6 +32,7 @@ public class Keyboard implements Runnable {
         this.dynamicGrid = dynamicGrid;
 
         GLFW.glfwSetKeyCallback(window.window, (windowed, key, code, action, mods) -> {
+            // need rework
             if (action == GLFW.GLFW_PRESS) {
                 for (Integer keys : timingKey)
                     if (key == keys) {
@@ -39,6 +40,7 @@ public class Keyboard implements Runnable {
                         movementMultiplyer = GV.DAS;
                         timer = 0;
                     }
+
                 checkKey(key);
                 nonTimingKey(key);
 
@@ -70,27 +72,23 @@ public class Keyboard implements Runnable {
 
     @Override
     public void run() {
-        try {
-            // while (true) {
-            updateFrametime();
-            stackCheck();
-            // }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        updateFrametime();
+        stackCheck();
+
     }
 
     /*---------------------------------------------------------*/
-
+    // need rework
     private void stackCheck() {
-        while (!keyStack.isEmpty()) {
+        if (!keyStack.isEmpty()) {
             timer += deltaFrametime;
             if (timer >= GV.ms * movementMultiplyer) {
                 checkKey(keyStack.peek());
                 movementMultiplyer = GV.ARR;
             }
             if (keyPressed(keyStack.peek()))
-                break;
+                return;
             else {
                 keyStack.pop();
             }
@@ -104,17 +102,14 @@ public class Keyboard implements Runnable {
             case 328:
             case GLFW.GLFW_KEY_UP:
                 dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 3) % 4;
-                // dynamicGrid.ghostHeight = dynamicGrid.yTetCoord;
-
                 break;
+
             case GLFW.GLFW_KEY_Z:
                 dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 1) % 4;
-                // dynamicGrid.ghostHeight = dynamicGrid.yTetCoord;
-
                 break;
+
             case GLFW.GLFW_KEY_A:
                 dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 2) % 4;
-
                 break;
 
             case GLFW.GLFW_KEY_SPACE:
@@ -123,9 +118,8 @@ public class Keyboard implements Runnable {
             default:
                 break;
         }
-        // dynamicGrid.staticGhostHeight = dynamicGrid.yStaticCoord;
-        // movementMultiplyer = GV.DAS;
-        // timer = 0;
+        dynamicGrid.dynamicGhostHeight = dynamicGrid.yStaticCoord;
+
     }
 
     float movementMultiplyer = GV.DAS;
@@ -146,9 +140,7 @@ public class Keyboard implements Runnable {
             case GLFW.GLFW_KEY_LEFT:
                 dynamicGrid.xDynamicCoord--;
                 dynamicGrid.dynamicGhostHeight = dynamicGrid.yStaticCoord;
-
                 timer = 0;
-
                 break;
 
             case 326:

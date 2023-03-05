@@ -1,12 +1,9 @@
 package game.object.tetromino;
 
-public class T extends Tetromino {
-    // damn u again java, u piece of shiet
+public class J extends Tetromino {
+    int t = 6;
 
-    // shifted by 7 value
-    int t = 7;
-
-    public T() {
+    public J() {
         super.rotation = this.rotation;
         super.gridSize = this.gridSize;
     }
@@ -15,23 +12,23 @@ public class T extends Tetromino {
 
     public final int[][][] rotation = {
             {
-                    { f, t, f },
+                    { f, f, t },
                     { t, t, t },
                     { f, f, f }
             },
             {
                     { f, t, f },
-                    { f, t, t },
-                    { f, t, f }
+                    { f, t, f },
+                    { f, t, t }
             },
             {
                     { f, f, f },
                     { t, t, t },
-                    { f, t, f }
+                    { t, f, f }
             },
             {
-                    { f, t, f },
                     { t, t, f },
+                    { f, t, f },
                     { f, t, f }
             }
     };
