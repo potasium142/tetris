@@ -7,7 +7,7 @@ package game;
 public class GV {
     // damn u java
 
-    public static final String title = "Tetirs";
+    public static final String title = "Tetris";
     public static int width = 1600;
     public static int height = 900;
 
@@ -15,7 +15,7 @@ public class GV {
     public static final String backgroundPath = mainPath + "asset/gura.jpg";
     public static final String tetromino = mainPath + "asset/SNES-SuperMarioWorld.png";
 
-    public static final float DAS = 20f;
+    public static final float DAS = 10f;
     public static final float ARR = 2f;
     public static final float DCD = 1f;
     public static final float SDF = 5f;

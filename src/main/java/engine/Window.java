@@ -7,12 +7,10 @@ import org.lwjgl.opengl.GL40;
 import org.lwjgl.system.MemoryUtil;
 
 public class Window {
-    private double lastFrametime;
-    private double deltaFrametime;
+
     private int width, height;
     private String title;
     public long window;
-    double timer;
 
     public Window(int width, int height, String title) {
         this.width = width;
@@ -37,17 +35,12 @@ public class Window {
         if (window == MemoryUtil.NULL)
             throw new RuntimeException("Failed to create GLFW window");
 
-        // GLFW.glfwSetFramebufferSizeCallback(window, ((window, width, height) -> {
-        // this.width = width;
-        // this.height = height;
-        // }));
-
         GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         GLFW.glfwSetWindowPos(window, (vidMode.width() - width) >> 1, (vidMode.height() - height) >> 1);
 
         GLFW.glfwMakeContextCurrent(window);
 
-        GLFW.glfwSwapInterval(10);
+        GLFW.glfwSwapInterval(1);
 
         GLFW.glfwShowWindow(window);
 
@@ -64,10 +57,6 @@ public class Window {
     public void update() {
         GLFW.glfwSwapBuffers(window);
         GLFW.glfwPollEvents();
-
-        double currentFrametime = GLFW.glfwGetTime();
-        deltaFrametime = currentFrametime - lastFrametime;
-        lastFrametime = currentFrametime;
     }
 
     public void cleanup() {
@@ -78,10 +67,6 @@ public class Window {
 
     public boolean shouldClose() {
         return GLFW.glfwWindowShouldClose(window);
-    }
-
-    public double getDeltaFrametimeMS() {
-        return deltaFrametime;
     }
 
 }

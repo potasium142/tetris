@@ -14,9 +14,6 @@ public abstract class GridRender {
     protected Object grid;
 
     // logic run on 10*40 grid, render 10*20 grid
-
-    public int gridRender[][] = new int[11][25];
-
     protected final float o12 = (float) 1 / 12;
 
     protected final float h = (GV.height * 2);

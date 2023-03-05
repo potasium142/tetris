@@ -9,26 +9,26 @@ public class T {
 
     public final int gridSize = 3;
 
-    public final int[][] rotation = {
+    public final int[][][] rotation = {
             {
-                    f, t, f,
-                    t, t, t,
-                    f, f, f
+                    { f, t, f },
+                    { t, t, t },
+                    { f, f, f }
             },
             {
-                    f, t, f,
-                    f, t, t,
-                    f, t, f
+                    { f, t, f },
+                    { f, t, t },
+                    { f, t, f }
             },
             {
-                    f, f, f,
-                    t, t, t,
-                    f, t, f
+                    { f, f, f },
+                    { t, t, t },
+                    { f, t, f }
             },
             {
-                    f, t, f,
-                    t, t, f,
-                    f, t, f
+                    { f, t, f },
+                    { t, t, f },
+                    { f, t, f }
             }
     };
 }

@@ -10,6 +10,7 @@ import game.logic.grid.DynamicGrid;
 public class Keyboard implements Runnable {
     private Window window;
     private Thread thread = new Thread(this, "Keyboard");
+
     private DynamicGrid dynamicGrid;
 
     /*---------------------------------------------------------*/
@@ -32,25 +33,25 @@ public class Keyboard implements Runnable {
 
         GLFW.glfwSetKeyCallback(window.window, (windowed, key, code, action, mods) -> {
             if (action == GLFW.GLFW_PRESS) {
-                System.out.println(key);
                 for (Integer keys : timingKey)
                     if (key == keys) {
                         keyStack.push(keys);
                         movementMultiplyer = GV.DAS;
                         timer = 0;
                     }
+                checkKey(key);
                 nonTimingKey(key);
-                if (!keyStack.isEmpty())
-                    checkKey();
 
                 if (key == GLFW.GLFW_KEY_DOWN) {
                     dynamicGrid.downHold = true;
+
                 }
             }
 
             if (action == GLFW.GLFW_RELEASE) {
                 if (key == GLFW.GLFW_KEY_DOWN) {
                     dynamicGrid.downHold = false;
+
                 }
             }
         });
@@ -64,16 +65,16 @@ public class Keyboard implements Runnable {
     /*---------------------------------------------------------*/
 
     public void start() {
-        thread.start();
+        thread.run();
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
-                updateFrametime();
-                stackCheck();
-            }
+            // while (true) {
+            updateFrametime();
+            stackCheck();
+            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,18 +86,15 @@ public class Keyboard implements Runnable {
         while (!keyStack.isEmpty()) {
             timer += deltaFrametime;
             if (timer >= GV.ms * movementMultiplyer) {
-                checkKey();
+                checkKey(keyStack.peek());
                 movementMultiplyer = GV.ARR;
-                timer = 0;
             }
             if (keyPressed(keyStack.peek()))
                 break;
             else {
                 keyStack.pop();
-                // movementMultiplyer = GV.DAS;
             }
         }
-
     }
 
     // Field key update
@@ -105,22 +103,33 @@ public class Keyboard implements Runnable {
         switch (key) {
             case 328:
             case GLFW.GLFW_KEY_UP:
-                dynamicGrid.state = (dynamicGrid.state + 3) % 4;
+                dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 3) % 4;
+                // dynamicGrid.ghostHeight = dynamicGrid.yTetCoord;
+
                 break;
             case GLFW.GLFW_KEY_Z:
-                dynamicGrid.state = (dynamicGrid.state + 1) % 4;
+                dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 1) % 4;
+                // dynamicGrid.ghostHeight = dynamicGrid.yTetCoord;
+
                 break;
             case GLFW.GLFW_KEY_A:
-                dynamicGrid.state = (dynamicGrid.state + 2) % 4;
+                dynamicGrid.nextRotation = (dynamicGrid.nextRotation + 2) % 4;
+
+                break;
+
+            case GLFW.GLFW_KEY_SPACE:
+                dynamicGrid.placeTetromino();
                 break;
             default:
                 break;
         }
-        // movementMultiplyer = GV.DCD;
+        // dynamicGrid.staticGhostHeight = dynamicGrid.yStaticCoord;
+        // movementMultiplyer = GV.DAS;
+        // timer = 0;
     }
 
     float movementMultiplyer = GV.DAS;
-    double timer;
+    public double timer;
 
     private double lastFrametime;
     private double deltaFrametime;
@@ -131,31 +140,24 @@ public class Keyboard implements Runnable {
         lastFrametime = currentFrametime;
     }
 
-    public void timingKey() {
-        timer += deltaFrametime;
-        if (keyPressed(keyStack.peek())) {
-            if (timer >= GV.ms * movementMultiplyer) {
-                checkKey();
-                movementMultiplyer = GV.ARR;
-                timer = 0;
-            }
-        }
-    }
-
-    private void checkKey() {
-        switch (keyStack.peek()) {
+    private void checkKey(int key) {
+        switch (key) {
             case 324:
             case GLFW.GLFW_KEY_LEFT:
-                dynamicGrid.xOrigin--;
-                dynamicGrid.xOrigin = Math.max(dynamicGrid.xOrigin, 0);
+                dynamicGrid.xDynamicCoord--;
+                dynamicGrid.dynamicGhostHeight = dynamicGrid.yStaticCoord;
+
+                timer = 0;
+
                 break;
 
             case 326:
             case GLFW.GLFW_KEY_RIGHT:
-                dynamicGrid.xOrigin++;
-                dynamicGrid.xOrigin = Math.min(dynamicGrid.xOrigin, 8 - (dynamicGrid.t.gridSize >> 1));
+                dynamicGrid.xDynamicCoord++;
+                dynamicGrid.dynamicGhostHeight = dynamicGrid.yStaticCoord;
+                timer = 0;
                 break;
-
         }
+
     }
 }

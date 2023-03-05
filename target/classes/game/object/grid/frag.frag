@@ -5,7 +5,9 @@ in vec2 fragTextureCoord;
 out vec4 fragColor;
 
 uniform sampler2D textureSampler;
+uniform float visibility;
 
 void main(void) {
     fragColor = texture(textureSampler, fragTextureCoord);
+    // fragColor.a *= min(1, visibility);
 }

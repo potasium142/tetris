@@ -15,6 +15,7 @@ import game.object.background.Background;
 //for some unknown reason, debug mode will make it crash
 
 public class MainGame {
+
     public static void main(String[] args) throws Exception {
         Window window = new Window(GV.width, GV.height, GV.title);
         window.init();
@@ -25,17 +26,20 @@ public class MainGame {
 
         Background background = new Background(loader, renderer);
 
-        DynamicGrid dynamicGrid = new DynamicGrid(loader, renderer);
         StaticGrid staticGrid = new StaticGrid(loader, renderer);
+        DynamicGrid dynamicGrid = new DynamicGrid(loader, renderer, staticGrid);
 
         Keyboard keyboard = new Keyboard(window, dynamicGrid);
 
-        keyboard.start();
-        dynamicGrid.startLogic();
-
         try {
             while (!window.shouldClose()) {
+                keyboard.start();
                 GL40.glClear(GL40.GL_COLOR_BUFFER_BIT | GL40.GL_DEPTH_BUFFER_BIT);
+
+                staticGrid.startLogic();
+                dynamicGrid.startLogic();
+                keyboard.start();
+
                 background.render();
                 staticGrid.render();
                 dynamicGrid.render();
@@ -51,4 +55,5 @@ public class MainGame {
             System.exit(0);
         }
     }
+
 }
