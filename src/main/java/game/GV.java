@@ -8,8 +8,8 @@ public class GV {
     // damn u java
 
     public static final String title = "Tetris";
-    public static int width = 1600;
-    public static int height = 900;
+    public static int width = 800;
+    public static int height = 600;
 
     public static final String mainPath = "./src/main/";
     public static final String backgroundPath = mainPath + "asset/gura.jpg";
@@ -21,7 +21,7 @@ public class GV {
     public static final float SDF = 5f;
     public static final float ms = .01667f;
 
-    public static final float gravity = ms * 64f;
-    public static final int softdropMultiplyer = 20;
+    public static final float gravity = ms * 60f;
+    public static final int softdropMultiplyer = 40;
 
 }

@@ -14,7 +14,7 @@ public class StaticGrid extends GridRender implements Runnable {
         super(objectLoader, renderer);
     }
 
-    int gridLogic[][] = new int[30][10];
+    int gridLogic[][] = new int[40][10];
 
     @Override
     protected void renderGrid() {
@@ -22,8 +22,8 @@ public class StaticGrid extends GridRender implements Runnable {
             for (int x = 0; x < 10; x++) {
                 Matrix4f matrix4f = createUITransformationMatrix(xOffset + x * xCoord * 2, yOffset + y * yCoord * 2);
 
-                if (gridLogic[y][x] == 0)
-                    continue;
+                // if (gridLogic[y][x] == 0)
+                // continue;
 
                 shader.setTitleIndex(gridLogic[y][x] - 1);
 
@@ -35,20 +35,31 @@ public class StaticGrid extends GridRender implements Runnable {
 
     @Override
     public void run() {
-        int offset = 1;
-        for (int i = 2; i < 22; i++) {
-            int amount = 0;
-            for (int tile : gridLogic[i]) {
-                if (tile != 0)
-                    amount++;
+        int i = 0;
+        do {
+
+            if (rowAmount(gridLogic[i]) == 10) {
+                int offset = i + 1;
+                System.out.println(offset);
+
+                for (int j = offset; j < 22; j++) {
+                    if (rowAmount(gridLogic[j]) == 10)
+                        continue;
+                    gridLogic[i++] = gridLogic[j].clone();
+                }
+                break;
             }
 
-            for (int j = 1; j < offset; j++) {
-                gridLogic[i] = gridLogic[j + i].clone();
-            }
-            if (amount == 14)
-                offset++;
+        } while (i++ < 22);
+    }
+
+    private int rowAmount(int[] row) {
+        int amount = 0;
+        for (int tile : row) {
+            if (tile != 0)
+                amount++;
         }
+        return amount;
     }
 
     public void startLogic() {

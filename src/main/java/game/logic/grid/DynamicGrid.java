@@ -1,11 +1,14 @@
 package game.logic.grid;
 
+import java.util.Stack;
+
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL40;
 
 import engine.ObjectLoader;
 import engine.Renderer;
+import engine.Window;
 import game.GV;
 import game.object.grid.GridRender;
 import game.object.tetromino.Bag;
@@ -17,23 +20,51 @@ public class DynamicGrid extends GridRender implements Runnable {
     private Bag bag = new Bag();
 
     private StaticGrid staticGrid;
+    private Window window;
 
-    public DynamicGrid(ObjectLoader objectLoader, Renderer renderer,
-            StaticGrid staticGrid)
-            throws Exception {
+    public DynamicGrid(ObjectLoader objectLoader,
+            Renderer renderer,
+            StaticGrid staticGrid,
+            Window window) throws Exception {
         super(objectLoader, renderer);
         this.staticGrid = staticGrid;
+        this.window = window;
+
+        GLFW.glfwSetKeyCallback(window.window, (windowed, key, code, action, mods) -> {
+            if (action == GLFW.GLFW_PRESS) {
+                for (int timeKey : timingKey) {
+                    if (key == timeKey) {
+                        repeatKey(key);
+                        keyStack.add(key);
+                        movementMultiplyer = GV.DAS * GV.ms;
+                        movementTimer = 0;
+                        break;
+                    }
+                }
+                nonRepeatKey(key);
+            }
+            if (action == GLFW.GLFW_RELEASE) {
+                switch (key) {
+                    case GLFW.GLFW_KEY_KP_5:
+                    case GLFW.GLFW_KEY_KP_2:
+                    case GLFW.GLFW_KEY_DOWN:
+                        downHold = false;
+                        break;
+                }
+            }
+        });
+
         resetPiece();
     }
 
     private Thread thread = new Thread(this);
 
-    private int currentRotation;
+    public int currentRotation;
     public int nextRotation;
 
     public int xDynamicCoord;
     public int yDynamicCoord;
-    private int xStaticCoord;
+    public int xStaticCoord;
     public int yStaticCoord;
     public int dynamicGhostHeight;
     public int staticGhostHeight;
@@ -90,46 +121,175 @@ public class DynamicGrid extends GridRender implements Runnable {
 
     public boolean downHold = false;
 
-    @Override
-    public void run() {
-        float gravityMultiplyer;
-        ghostPiece();
-        gridCheck();
-        updateFrametime();
-        timer += deltaFrametime;
+    double movementTimer = 0;
+    double gravityTimer = 0;
+
+    public Stack<Integer> keyStack = new Stack<Integer>();
+
+    private final int[] timingKey = {
+            GLFW.GLFW_KEY_DOWN,
+            GLFW.GLFW_KEY_LEFT,
+            GLFW.GLFW_KEY_RIGHT,
+            324, 326
+    };
+    float movementMultiplyer;
+    float gravityMultiplyer;
+
+    void movement() {
+
+        try {
+            while (!(GLFW.glfwGetKey(window.window, keyStack.peek()) == GLFW.GLFW_PRESS)) {
+                keyStack.pop();
+                movementMultiplyer = GV.DAS * GV.ms;
+
+            }
+            if (movementTimer >= movementMultiplyer) {
+                movementTimer = 0;
+                repeatKey(keyStack.peek());
+                gridCheck();
+                movementMultiplyer = GV.ARR * GV.ms;
+            }
+
+        } catch (Exception e) {
+        }
 
         gravityMultiplyer = downHold ? GV.gravity / GV.softdropMultiplyer : GV.gravity;
 
-        if (timer >= gravityMultiplyer) {
-            timer = 0;
+        if (gravityTimer >= gravityMultiplyer) {
+            gravityTimer = 0;
             yDynamicCoord--;
         }
     }
 
+    boolean nonRepeatKey(int key) {
+        switch (key) {
+
+            case GLFW.GLFW_KEY_KP_8:
+                rotation(nextRotation = (nextRotation + 3) % 4);
+                break;
+
+            case GLFW.GLFW_KEY_Z:
+                rotation(nextRotation = (nextRotation + 1) % 4);
+                break;
+
+            case GLFW.GLFW_KEY_A:
+                rotation(nextRotation = (nextRotation + 2) % 4);
+                break;
+
+            case GLFW.GLFW_KEY_KP_5:
+            case GLFW.GLFW_KEY_KP_2:
+            case GLFW.GLFW_KEY_DOWN:
+                downHold = true;
+                break;
+
+            case GLFW.GLFW_KEY_SPACE:
+                placeTetromino();
+                break;
+
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    boolean repeatKey(int key) {
+        switch (key) {
+            case GLFW.GLFW_KEY_KP_4:
+            case GLFW.GLFW_KEY_LEFT:
+                xDynamicCoord = xDynamicCoord - 1;
+                break;
+
+            case GLFW.GLFW_KEY_KP_6:
+            case GLFW.GLFW_KEY_RIGHT:
+                xDynamicCoord = xDynamicCoord + 1;
+                break;
+
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    void rotation(int nextState) {
+        // if (placementCheck(xDynamicCoord, yDynamicCoord, nextState)) {
+        // xStaticCoord = xDynamicCoord;
+        // yStaticCoord = yDynamicCoord;
+        // currentRotation = nextRotation;
+
+        // } else
+
+        {
+
+            System.out.println(currentRotation + " : " + nextState);
+            int[][] currentOffsetTable = tetromino.offsetData[currentRotation];
+            int[][] nextOffsetTable = tetromino.offsetData[nextState];
+
+            for (int i = 0; i < nextOffsetTable.length; i++) {
+                int xOffsetPlacement = xDynamicCoord + (currentOffsetTable[i][0] - nextOffsetTable[i][0]);
+                int yOffsetPlacement = yDynamicCoord + (currentOffsetTable[i][1] - nextOffsetTable[i][1]);
+                if (placementCheck(
+                        xOffsetPlacement,
+                        yOffsetPlacement,
+                        nextState)) {
+                    xStaticCoord = xOffsetPlacement;
+                    yStaticCoord = yOffsetPlacement;
+
+                    currentRotation = nextRotation;
+
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void run() {
+        movement();
+        gridCheck();
+        ghostPiece();
+        gravityLock();
+        updateFrametime();
+        gravityTimer += deltaFrametime;
+        movementTimer += deltaFrametime;
+
+    }
+
+    float gravityLockTimer = 0;
+
+    private void gravityLock() {
+        if (yStaticCoord != staticGhostHeight) {
+            gravityLockTimer = 0;
+            return;
+        }
+
+        if (gravityLockTimer >= gravityMultiplyer * 10) {
+            placeTetromino();
+            gravityLockTimer = 0;
+        }
+
+        gravityLockTimer += deltaFrametime;
+    }
+
     private void gridCheck() {
-        if (placementCheck(xDynamicCoord, yDynamicCoord)) {
+        if (placementCheck(xDynamicCoord, yDynamicCoord, nextRotation)) {
             xStaticCoord = xDynamicCoord;
             yStaticCoord = yDynamicCoord;
             currentRotation = nextRotation;
-            staticGhostHeight = dynamicGhostHeight;
 
         } else {
             xDynamicCoord = xStaticCoord;
             yDynamicCoord = yStaticCoord;
             nextRotation = currentRotation;
-            dynamicGhostHeight = staticGhostHeight;
-
         }
     }
 
-    private boolean placementCheck(int xPos, int yPos) {
+    private boolean placementCheck(int xPos, int yPos, int rotation) {
         try {
             for (int y = 0; y < tetromino.gridSize; y++) {
                 for (int x = 0; x < tetromino.gridSize; x++) {
-                    if (tetromino.rotation[nextRotation][y][x] == 0)
+                    if (tetromino.rotation[rotation][y][x] == 0)
                         continue;
-                    if (tetromino.rotation[nextRotation][y][x]
-                            * staticGrid.gridLogic[yPos + y][xPos + x] != 0)
+                    if (staticGrid.gridLogic[yPos + y][xPos + x] != 0)
                         return false;
 
                 }
@@ -163,12 +323,14 @@ public class DynamicGrid extends GridRender implements Runnable {
         xStaticCoord = 4 - (tetromino.gridSize >> 1);
         yStaticCoord = 19;
         currentRotation = 0;
-        dynamicGhostHeight = yStaticCoord;
+        staticGhostHeight = yStaticCoord;
     }
 
     private void ghostPiece() {
-        while (placementCheck(xDynamicCoord, dynamicGhostHeight - 1)) {
+        dynamicGhostHeight = yStaticCoord;
+        while (placementCheck(xDynamicCoord, dynamicGhostHeight - 1, currentRotation)) {
             dynamicGhostHeight--;
         }
+        staticGhostHeight = dynamicGhostHeight;
     }
 }

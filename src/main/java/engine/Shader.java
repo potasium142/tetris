@@ -54,7 +54,7 @@ public abstract class Shader {
         GL40.glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
-    private int createShader(String filePath, int shaderType) throws Exception {
+    private int createShader(String filePath, int shaderType) {
         StringBuilder shaderSource = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -69,14 +69,18 @@ public abstract class Shader {
         }
         int shaderID = GL40.glCreateShader(shaderType);
 
-        if (shaderID == 0)
-            throw new Exception("Error creating shader : " + shaderType);
-
         GL40.glShaderSource(shaderID, shaderSource);
 
         GL40.glCompileShader(shaderID);
-        if (GL40.glGetShaderi(shaderID, GL40.GL_COMPILE_STATUS) == 0)
-            throw new Exception("Error compiling shader : " + shaderType);
+        try {
+            if (shaderID == 0)
+                throw new Exception("Error creating shader : " + shaderType);
+            if (GL40.glGetShaderi(shaderID, GL40.GL_COMPILE_STATUS) == 0)
+                throw new Exception("Error compiling shader : " + shaderType);
+        } catch (Exception e) {
+            System.exit(-2);
+            e.printStackTrace();
+        }
 
         GL40.glAttachShader(programID, shaderID);
 

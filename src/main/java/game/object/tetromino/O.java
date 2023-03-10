@@ -11,28 +11,44 @@ public class O extends Tetromino {
         super.gridSize = this.gridSize;
     }
 
-    public final int gridSize = 3;
+    public final int gridSize = 2;
 
     public final int[][][] rotation = {
             {
-                    { f, t, t },
-                    { f, t, t },
-                    { f, f, f }
+                    { t, t },
+                    { t, t },
             },
             {
-                    { f, f, f },
-                    { f, t, t },
-                    { f, t, t }
+                    { t, t },
+                    { t, t },
             },
             {
-                    { f, f, f },
-                    { t, t, f },
-                    { t, t, f }
+                    { t, t },
+                    { t, t },
             },
             {
-                    { t, t, f },
-                    { t, t, f },
-                    { f, f, f }
+                    { t, t },
+                    { t, t },
             }
+            // {
+            // { f, t, t },
+            // { f, t, t },
+            // { f, f, f }
+            // },
+            // {
+            // { f, f, f },
+            // { f, t, t },
+            // { f, t, t }
+            // },
+            // {
+            // { f, f, f },
+            // { t, t, f },
+            // { t, t, f }
+            // },
+            // {
+            // { t, t, f },
+            // { t, t, f },
+            // { f, f, f }
+            // }
     };
 }

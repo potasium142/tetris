@@ -55,7 +55,7 @@ public class ObjectLoader {
         return new Object(vaoID, vertices.length / 2);
     }
 
-    public int[] loadTexture(String filePath) throws Exception {
+    public int[] loadTexture(String filePath) {
         int width, height;
         ByteBuffer buffer;
         MemoryStack stack = MemoryStack.stackPush();
@@ -65,8 +65,13 @@ public class ObjectLoader {
 
         buffer = STBImage.stbi_load(filePath, w, h, c, 4);
 
-        if (buffer == null)
-            throw new Exception(filePath + " failed to load");
+        try {
+            if (buffer == null)
+                throw new Exception(filePath + " failed to load");
+        } catch (Exception e) {
+            System.exit(-1);
+            e.printStackTrace();
+        }
 
         width = w.get();
         height = h.get();
