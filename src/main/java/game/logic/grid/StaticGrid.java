@@ -20,6 +20,8 @@ public class StaticGrid extends GridRender implements Runnable {
         gridLogic = new int[40][10];
     }
 
+    float visibility;
+
     @Override
     protected void renderGrid() {
         for (int y = 0; y < 22; y++) {
@@ -29,7 +31,7 @@ public class StaticGrid extends GridRender implements Runnable {
                 shader.setVisibility(1f);
                 if (gridLogic[y][x] == 0)
                     continue;
-
+                shader.setVisibility(1 - visibility);
                 shader.setTitleIndex(gridLogic[y][x] - 1);
 
                 shader.setUnifromDataMatrix(matrix4f);

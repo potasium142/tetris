@@ -55,6 +55,10 @@ public class DynamicGrid extends GridRender implements Runnable {
                     case GLFW.GLFW_KEY_DOWN:
                         downHold = false;
                         break;
+                    case GLFW.GLFW_KEY_R:
+                        resetTimer = 0;
+
+                        break;
                 }
             }
         });
@@ -93,7 +97,7 @@ public class DynamicGrid extends GridRender implements Runnable {
                         yOffset + (y + yStaticCoord) * yCoord * 2);
 
                 shader.setTitleIndex(currentTitle - 1);
-                shader.setVisibility(visibility);
+                shader.setVisibility(visibility * (1 - resetTimer));
 
                 shader.setUnifromDataMatrix(matrix4f);
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
@@ -104,7 +108,7 @@ public class DynamicGrid extends GridRender implements Runnable {
                         yOffset + (y + staticGhostHeight) * yCoord * 2);
 
                 shader.setTitleIndex(7);
-                shader.setVisibility(1f);
+                shader.setVisibility(1);
 
                 shader.setUnifromDataMatrix(matrix4f);
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
@@ -175,10 +179,12 @@ public class DynamicGrid extends GridRender implements Runnable {
             GLFW.GLFW_KEY_DOWN,
             GLFW.GLFW_KEY_LEFT,
             GLFW.GLFW_KEY_RIGHT,
-            324, 326
+            324, 326,
+            GLFW.GLFW_KEY_R
     };
     float movementMultiplyer;
     float gravityMultiplyer;
+    float resetTimer = 0;
 
     void movement() {
 
@@ -242,7 +248,8 @@ public class DynamicGrid extends GridRender implements Runnable {
                 break;
 
             case GLFW.GLFW_KEY_R:
-                reset();
+                if (!logicRunning)
+                    reset();
                 break;
 
             case GLFW.GLFW_KEY_LEFT_SHIFT:
@@ -264,6 +271,14 @@ public class DynamicGrid extends GridRender implements Runnable {
             case GLFW.GLFW_KEY_KP_6:
             case GLFW.GLFW_KEY_RIGHT:
                 xDynamicCoord = xDynamicCoord + 1;
+                break;
+
+            case GLFW.GLFW_KEY_R:
+                resetTimer += deltaFrametime;
+                if (resetTimer >= .7f) {
+                    reset();
+                    resetTimer = 0;
+                }
                 break;
 
             default:
@@ -359,6 +374,7 @@ public class DynamicGrid extends GridRender implements Runnable {
         updateFrametime();
         gravityTimer += deltaFrametime;
         movementTimer += deltaFrametime;
+        staticGrid.visibility = resetTimer;
 
     }
 
@@ -430,6 +446,7 @@ public class DynamicGrid extends GridRender implements Runnable {
         }
         nextPiece();
         resetPiece();
+        movementTimer = 0;
     }
 
     void nextPiece() {

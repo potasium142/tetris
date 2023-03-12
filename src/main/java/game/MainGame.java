@@ -10,6 +10,7 @@ import game.logic.grid.DynamicGrid;
 import game.logic.grid.StaticGrid;
 import game.object.UI.Border;
 import game.object.background.Background;
+import game.object.background.TopOutScreen;
 
 //NOTE:
 //DO NOT ATTEMPT TO RUN THIS IN DEBUG MODE IN JDK19
@@ -26,6 +27,7 @@ public class MainGame {
         ObjectLoader loader = new ObjectLoader();
 
         Background background = new Background(loader, renderer);
+        TopOutScreen tos = new TopOutScreen(loader, renderer);
 
         BackgroundGrid backgroundGrid = new BackgroundGrid(loader, renderer);
         StaticGrid staticGrid = new StaticGrid(loader, renderer);
@@ -45,7 +47,12 @@ public class MainGame {
                 staticGrid.render();
                 dynamicGrid.render();
                 border.renderer.render();
+                if (!dynamicGrid.logicRunning) {
+                    tos.render();
+                }
+
                 window.update();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
