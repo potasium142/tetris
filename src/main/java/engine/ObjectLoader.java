@@ -25,8 +25,6 @@ public class ObjectLoader {
 
         GL40.glBindVertexArray(vaoID);
         GL40.glBindBuffer(GL40.GL_ELEMENT_ARRAY_BUFFER, vboID);
-        // IntBuffer buffer = storeDataInIntBuffer(indices);
-        // GL40.glBufferData(GL40.GL_ELEMENT_ARRAY_BUFFER, buffer, GL40.GL_STATIC_DRAW);
 
         storeDataInAttributeList(0, 2, vertices);
         storeDataInAttributeList(1, 2, textureCoordinates);

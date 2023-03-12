@@ -16,14 +16,19 @@ public class StaticGrid extends GridRender implements Runnable {
 
     int gridLogic[][] = new int[40][10];
 
+    public void reset() {
+        gridLogic = new int[40][10];
+    }
+
     @Override
     protected void renderGrid() {
         for (int y = 0; y < 22; y++) {
             for (int x = 0; x < 10; x++) {
                 Matrix4f matrix4f = createUITransformationMatrix(xOffset + x * xCoord * 2, yOffset + y * yCoord * 2);
 
-                // if (gridLogic[y][x] == 0)
-                // continue;
+                shader.setVisibility(1f);
+                if (gridLogic[y][x] == 0)
+                    continue;
 
                 shader.setTitleIndex(gridLogic[y][x] - 1);
 

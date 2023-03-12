@@ -5,8 +5,10 @@ import org.lwjgl.opengl.GL40;
 import engine.ObjectLoader;
 import engine.Renderer;
 import engine.Window;
+import game.logic.grid.BackgroundGrid;
 import game.logic.grid.DynamicGrid;
 import game.logic.grid.StaticGrid;
+import game.object.UI.Border;
 import game.object.background.Background;
 
 //NOTE:
@@ -25,21 +27,24 @@ public class MainGame {
 
         Background background = new Background(loader, renderer);
 
-        // Keyboard keyboard = new Keyboard(window);
+        BackgroundGrid backgroundGrid = new BackgroundGrid(loader, renderer);
         StaticGrid staticGrid = new StaticGrid(loader, renderer);
         DynamicGrid dynamicGrid = new DynamicGrid(loader, renderer, staticGrid, window);
-
-        // keyboard.testThread.start();
+        Border border = new Border(loader);
 
         try {
             while (!window.shouldClose()) {
                 GL40.glClear(GL40.GL_COLOR_BUFFER_BIT | GL40.GL_DEPTH_BUFFER_BIT);
-                dynamicGrid.startLogic();
-                staticGrid.startLogic();
+                if (dynamicGrid.logicRunning) {
+                    dynamicGrid.startLogic();
+                    staticGrid.startLogic();
+                }
 
                 background.render();
+                backgroundGrid.render();
                 staticGrid.render();
                 dynamicGrid.render();
+                border.renderer.render();
                 window.update();
             }
         } catch (Exception e) {

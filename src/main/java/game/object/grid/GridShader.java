@@ -35,8 +35,8 @@ public class GridShader extends Shader {
         super.unifromFloat(titleIndex, index);
     }
 
-    public void setVisibility(int data) {
-        super.unifromFloat(visibility, data);
+    public void setVisibility(float vis) {
+        super.unifromFloat(visibility, vis);
     }
 
 }

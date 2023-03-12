@@ -1,13 +1,13 @@
 #version 400 core
 
 in vec2 fragTextureCoord;
+in float saturation;
 
 out vec4 fragColor;
 
 uniform sampler2D textureSampler;
-uniform float visibility;
 
 void main(void) {
     fragColor = texture(textureSampler, fragTextureCoord);
-    // fragColor.a *= min(1, visibility);
+    fragColor.rgb *= saturation;
 }

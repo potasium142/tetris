@@ -13,10 +13,15 @@ public class Bag {
             new O()
     };
 
-    public Queue<Tetromino> bag = new LinkedList<>();
+    public Queue<Tetromino> bag;
     private ArrayList<Tetromino> listBag = new ArrayList<>(Arrays.asList(defaultBag));
 
     public Bag() {
+        reset();
+    }
+
+    public void reset() {
+        bag = new LinkedList<>();
         Collections.shuffle(listBag);
         bag.addAll(listBag);
         Collections.shuffle(listBag);

@@ -20,22 +20,22 @@ public abstract class GridRender {
     protected final float w = (GV.width * 2);
     protected final float r = 1 / (w * 20);
 
-    protected final float titleScale = .8f;
+    protected float titleScale = .8f;
 
     protected final float xCoord = (h * r) * titleScale;
     protected final float yCoord = (w * r) * titleScale;
 
-    protected final float xOffset = -xCoord * 10;
+    protected final float xOffset = -xCoord * 9;
     protected final float yOffset = -yCoord * 20;
 
-    private float[] textureCoordinates = {
+    protected float[] textureCoordinates = {
             0, 0,
             0, 1,
             o12, 0,
             o12, 1
     };
 
-    private final float[] vertices = {
+    protected final float[] vertices = {
             -xCoord, yCoord,
             -xCoord, -yCoord,
             xCoord, yCoord,
@@ -57,17 +57,6 @@ public abstract class GridRender {
         GL40.glActiveTexture(GL40.GL_TEXTURE);
         GL40.glBindTexture(GL40.GL_TEXTURE_2D, grid.textureID);
 
-        // for (int j = 0; j < 20; j++) {
-        // for (int i = 0; i < 10; i++) {
-        // Matrix4f matrix4f = createUITransformationMatrix(xOffset + i * xCoord * 2,
-        // yOffset + j * yCoord * 2);
-
-        // shader.setTitleIndex(gridRender[i][j] + 7);
-
-        // shader.loadTransformation(matrix4f);
-        // GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
-        // }
-        // }
         renderGrid();
 
         GL40.glDisable(GL40.GL_BLEND);
