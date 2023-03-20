@@ -8,11 +8,11 @@ public class GV {
     // damn u java
 
     public static final String title = "Tetris";
-    public static int width = 1600;
-    public static int height = 900;
+    public static int width = 800;
+    public static int height = 800;
 
     public static final String mainPath = "./src/main/";
-    public static final String backgroundPath = mainPath + "asset/gura.jpg";
+    public static final String backgroundPath = mainPath + "asset/2d1ea2d8af1f72412b0e.jpg";
     public static final String tetromino = mainPath + "asset/SNES-SuperMarioWorld.png";
 
     public static final float DAS = 10f;

@@ -8,9 +8,9 @@ import java.util.Queue;
 
 public class Bag {
     Tetromino[] defaultBag = new Tetromino[] {
-            new T(), new L(), new S(),
-            new I(), new Z(), new J(),
-            new O()
+            // new T(), new L(), new S(),
+            // new I(), new Z(), new J(),
+            new O(), new Amogus(), new X()
     };
 
     public Queue<Tetromino> bag;
