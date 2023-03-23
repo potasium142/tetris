@@ -9,6 +9,8 @@ public class S extends Tetromino {
     public S() {
         super.rotation = this.rotation;
         super.gridSize = this.gridSize;
+        super.t = t;
+
     }
 
     public int gridSize = 3;

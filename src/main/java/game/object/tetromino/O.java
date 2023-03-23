@@ -9,6 +9,10 @@ public class O extends Tetromino {
     public O() {
         super.rotation = this.rotation;
         super.gridSize = this.gridSize;
+        yOffsetRatio = -3f;
+        xOffsetRatio = -1f;
+        super.t = t;
+
     }
 
     public final int gridSize = 2;

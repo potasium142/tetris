@@ -2,8 +2,35 @@ package game.object.tetromino;
 
 public class Tetromino {
     static int f = 0;
+    public int t;
     public int gridSize;
     public int[][][] rotation;
+    public float xOffsetRatio = -1.5f;
+    public float yOffsetRatio = -2f;
+
+    public final int[][][] rotationDefault = {
+            {
+                    { 1 },
+
+            },
+            {
+                    { 1 },
+
+            },
+            {
+                    { 1 },
+
+            },
+            {
+                    { 0 },
+
+            }
+    };
+
+    public Tetromino() {
+        this.gridSize = 0;
+        this.rotation = rotationDefault;
+    }
 
     public int[][][] offsetData = {
             { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, }, // 0

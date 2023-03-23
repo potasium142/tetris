@@ -6,6 +6,8 @@ public class L extends Tetromino {
     public L() {
         super.rotation = this.rotation;
         super.gridSize = this.gridSize;
+        super.t = t;
+
     }
 
     int gridSize = 3;

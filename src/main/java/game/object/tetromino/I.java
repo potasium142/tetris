@@ -11,6 +11,11 @@ public class I extends Tetromino {
         super.gridSize = this.gridSize;
         super.offsetData = this.offsetData;
         super.offsetData_180 = WALLKICK_I_180;
+
+        yOffsetRatio = -1.5f;
+        xOffsetRatio = -2;
+        super.t = t;
+
     }
 
     private final int[][][] offsetData = {

@@ -20,7 +20,7 @@ public abstract class GridRender {
     protected final float w = (GV.width * 2);
     protected final float r = 1 / (w * 20);
 
-    protected float titleScale = .8f;
+    protected float titleScale = .7f;
 
     protected final float xCoord = (h * r) * titleScale;
     protected final float yCoord = (w * r) * titleScale;
@@ -56,7 +56,8 @@ public abstract class GridRender {
 
         GL40.glActiveTexture(GL40.GL_TEXTURE);
         GL40.glBindTexture(GL40.GL_TEXTURE_2D, grid.textureID);
-
+        GL40.glTexParameteri(GL40.GL_TEXTURE_2D, GL40.GL_TEXTURE_MIN_FILTER, GL40.GL_NEAREST);
+        GL40.glTexParameteri(GL40.GL_TEXTURE_2D, GL40.GL_TEXTURE_MAG_FILTER, GL40.GL_NEAREST);
         renderGrid();
 
         GL40.glDisable(GL40.GL_BLEND);

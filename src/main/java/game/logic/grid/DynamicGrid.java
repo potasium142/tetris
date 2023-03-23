@@ -78,6 +78,8 @@ public class DynamicGrid extends GridRender implements Runnable {
     public int dynamicGhostHeight;
     public int staticGhostHeight;
 
+    public boolean rotated;
+
     public void startLogic() {
         thread.run();
     }
@@ -117,16 +119,18 @@ public class DynamicGrid extends GridRender implements Runnable {
 
         }
         if (hold != null) {
+            int renderIndex = holded ? 8 : hold.t - 1;
             for (int x = 0; x < hold.gridSize; x++) {
                 for (int y = 0; y < hold.gridSize; y++) {
                     int currentTitle = hold.rotation[2][y][x];
                     if (currentTitle == 0)
                         continue;
 
-                    Matrix4f matrix4f = createUITransformationMatrix(xOffset + (x - 6) * xCoord * 2,
-                            yOffset + (y + 16) * yCoord * 2);
+                    Matrix4f matrix4f = createUITransformationMatrix(
+                            xOffset + (x - 3f + hold.xOffsetRatio) * xCoord * 2,
+                            yOffset + (y + 15.25f - hold.yOffsetRatio) * yCoord * 2);
 
-                    shader.setTitleIndex(currentTitle - 1);
+                    shader.setTitleIndex(renderIndex);
 
                     shader.setUnifromDataMatrix(matrix4f);
                     GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
@@ -135,7 +139,7 @@ public class DynamicGrid extends GridRender implements Runnable {
             }
         }
         Iterator<Tetromino> previewBag = bag.bag.iterator();
-        for (int i = 4; i != 0; i--) {
+        for (int i = 5; i != 0; i--) {
             Tetromino currentPreview = previewBag.next();
             for (int x = 0; x < currentPreview.gridSize; x++) {
                 for (int y = 0; y < currentPreview.gridSize; y++) {
@@ -143,10 +147,11 @@ public class DynamicGrid extends GridRender implements Runnable {
                     if (currentTitle == 0)
                         continue;
 
-                    Matrix4f matrix4f = createUITransformationMatrix(xOffset + (x + 13) * xCoord * 2,
-                            yOffset + (y + (i * 5) - 5) * yCoord * 2);
+                    Matrix4f matrix4f = createUITransformationMatrix(
+                            xOffset + (x + 13 + currentPreview.xOffsetRatio) * xCoord * 2,
+                            yOffset + (y + (i * 3) - currentPreview.yOffsetRatio) * yCoord * 2);
 
-                    shader.setTitleIndex(currentTitle - 1);
+                    shader.setTitleIndex(currentPreview.t - 1);
 
                     shader.setUnifromDataMatrix(matrix4f);
                     GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
@@ -198,6 +203,7 @@ public class DynamicGrid extends GridRender implements Runnable {
                 movementTimer = 0;
                 repeatKey(keyStack.peek());
                 if (gridCheck()) {
+
                     movementMultiplyer = GV.ARR * GV.ms;
                     softGravityLockTimer = 0;
                 }
@@ -243,8 +249,10 @@ public class DynamicGrid extends GridRender implements Runnable {
                 break;
 
             case GLFW.GLFW_KEY_SPACE:
-                if (movementTimer >= GV.DCD * GV.ms)
+                if (movementTimer >= GV.DCD * GV.ms) {
+                    staticGrid.hardDrop();
                     placeTetromino();
+                }
                 break;
 
             case GLFW.GLFW_KEY_R:
@@ -326,9 +334,8 @@ public class DynamicGrid extends GridRender implements Runnable {
                     nextState)) {
                 xStaticCoord = xOffsetPlacement;
                 yStaticCoord = yOffsetPlacement;
-
                 currentRotation = nextRotation;
-
+                rotated = true;
                 break;
             }
         }
@@ -349,6 +356,7 @@ public class DynamicGrid extends GridRender implements Runnable {
                 yStaticCoord = yOffsetPlacement;
 
                 currentRotation = nextRotation;
+                rotated = true;
 
                 break;
             }
@@ -383,7 +391,6 @@ public class DynamicGrid extends GridRender implements Runnable {
 
     private void gravityLock() {
         if (yStaticCoord != staticGhostHeight) {
-            hardGravityLockTimer = 0;
             softGravityLockTimer = 0;
             return;
         }
@@ -391,7 +398,7 @@ public class DynamicGrid extends GridRender implements Runnable {
         if (downHold)
             gravityMultiplyer *= 10;
 
-        if (hardGravityLockTimer >= GV.ms * 100 || softGravityLockTimer >= gravityMultiplyer) {
+        if (hardGravityLockTimer >= GV.ms * 100 || softGravityLockTimer >= GV.ms * 100) {
             placeTetromino();
             hardGravityLockTimer = 0;
             softGravityLockTimer = 0;
@@ -404,11 +411,16 @@ public class DynamicGrid extends GridRender implements Runnable {
 
     }
 
+    boolean softDrop;
+
     private boolean gridCheck() {
         if (placementCheck(xDynamicCoord, yDynamicCoord, nextRotation)) {
+            if (downHold)
+                staticGrid.softDrop();
             xStaticCoord = xDynamicCoord;
             yStaticCoord = yDynamicCoord;
             currentRotation = nextRotation;
+
             return true;
         }
         xDynamicCoord = xStaticCoord;
@@ -435,6 +447,7 @@ public class DynamicGrid extends GridRender implements Runnable {
         }
     }
 
+
     public void placeTetromino() {
         for (int y = 0; y < tetromino.gridSize; y++) {
             for (int x = 0; x < tetromino.gridSize; x++) {
@@ -444,8 +457,7 @@ public class DynamicGrid extends GridRender implements Runnable {
                         + x] += tetromino.rotation[nextRotation][y][x];
             }
         }
-        nextPiece();
-        resetPiece();
+        staticGrid.run();
         movementTimer = 0;
     }
 
@@ -454,8 +466,9 @@ public class DynamicGrid extends GridRender implements Runnable {
         bag.checkBag();
     }
 
-    private void resetPiece() {
+    void resetPiece() {
 
+        rotated = false;
         holded = false;
         currentRotation = 2;
         nextRotation = 2;
@@ -463,11 +476,13 @@ public class DynamicGrid extends GridRender implements Runnable {
         visibility = 1;
 
         xDynamicCoord = 5 - (tetromino.gridSize >> 1);
-        yDynamicCoord = 19;
+        yDynamicCoord = 22;
         xStaticCoord = 5 - (tetromino.gridSize >> 1);
-        yStaticCoord = 19;
+        yStaticCoord = 22;
         currentRotation = 0;
         staticGhostHeight = yStaticCoord;
+        hardGravityLockTimer = 0;
+        softGravityLockTimer = 0;
         if (!gridCheck()) {
             logicRunning = false;
         }

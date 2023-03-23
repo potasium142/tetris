@@ -45,12 +45,12 @@ public class ObjectLoader {
         IntBuffer buffer = storeDataInIntBuffer(indices);
         GL40.glBufferData(GL40.GL_ELEMENT_ARRAY_BUFFER, buffer, GL40.GL_STATIC_DRAW);
 
-        storeDataInAttributeList(0, 3, vertices);
+        storeDataInAttributeList(0, 2, vertices);
         storeDataInAttributeList(1, 2, textureCoordinates);
 
         GL40.glBindVertexArray(0);
 
-        return new Object(vaoID, vertices.length / 2);
+        return new Object(vaoID, indices.length);
     }
 
     public int[] loadTexture(String filePath) {

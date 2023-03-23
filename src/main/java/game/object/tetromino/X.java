@@ -6,6 +6,8 @@ public class X extends Tetromino {
     public X() {
         super.rotation = this.rotation;
         super.gridSize = this.gridSize;
+        super.t = t;
+
     }
 
     public final int gridSize = 3;
