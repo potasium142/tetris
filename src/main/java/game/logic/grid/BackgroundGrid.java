@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL40;
 
 import engine.ObjectLoader;
 import engine.Renderer;
+import game.GV;
 import game.object.grid.GridRender;
 import game.object.grid.GridShader;
 
@@ -18,6 +19,7 @@ public class BackgroundGrid extends GridRender {
         this.grid = objectLoader.loadMesh2D(super.vertices, textureCoordinates);
         super.grid.textureID = objectLoader.loadTexture("./src/main/asset/blank_tile.png")[0];
         this.staticGrid = staticGrid;
+
     }
 
     private float[] textureCoordinates = {
@@ -31,13 +33,16 @@ public class BackgroundGrid extends GridRender {
     protected void renderGrid() {
         for (int y = 0; y < 22; y++) {
             for (int x = 0; x < 10; x++) {
-                Matrix4f matrix4f = createUITransformationMatrix(xOffset + x * xCoord * 2, yOffset + y * yCoord * 2);
-
+                Matrix4f matrix4f = createUITransformationMatrix(GV.xOffset + x * GV.xCoord * 2,
+                        GV.yOffset + y * GV.yCoord * 2);
                 // shader.setVisibility(1f);
                 if (staticGrid.gridLogic[y][x] != 0)
                     continue;
                 shader.setUnifromDataMatrix(matrix4f);
+
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
+                // matrix.translate(-(xOffset + x * xCoord * 2), -(yOffset + y * yCoord * 2),
+                // 0);
             }
         }
     }

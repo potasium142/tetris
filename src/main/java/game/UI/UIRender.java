@@ -3,13 +3,14 @@ package game.UI;
 import org.lwjgl.opengl.GL40;
 
 import engine.Object;
+import engine.Shader;
 
 public class UIRender {
 
-    protected UIShader shader;
+    protected Shader shader;
     Object UI;
 
-    public UIRender(UIShader shader, Object uI) {
+    public UIRender(Shader shader, Object uI) {
         this.shader = shader;
         UI = uI;
     }

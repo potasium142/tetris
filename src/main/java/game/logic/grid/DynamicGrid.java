@@ -95,8 +95,8 @@ public class DynamicGrid extends GridRender implements Runnable {
                 if (currentTitle == 0)
                     continue;
 
-                Matrix4f matrix4f = createUITransformationMatrix(xOffset + (x + xStaticCoord) * xCoord * 2,
-                        yOffset + (y + yStaticCoord) * yCoord * 2);
+                Matrix4f matrix4f = createUITransformationMatrix(GV.xOffset + (x + xStaticCoord) * GV.xCoord * 2,
+                        GV.yOffset + (y + yStaticCoord) * GV.yCoord * 2);
 
                 shader.setTitleIndex(currentTitle - 1);
                 shader.setVisibility(visibility * (1 - resetTimer));
@@ -106,8 +106,8 @@ public class DynamicGrid extends GridRender implements Runnable {
 
                 // draw ghost pieces
 
-                matrix4f = createUITransformationMatrix(xOffset + (x + xStaticCoord) * xCoord * 2,
-                        yOffset + (y + staticGhostHeight) * yCoord * 2);
+                matrix4f = createUITransformationMatrix(GV.xOffset + (x + xStaticCoord) * GV.xCoord * 2,
+                        GV.yOffset + (y + staticGhostHeight) * GV.yCoord * 2);
 
                 shader.setTitleIndex(7);
                 shader.setVisibility(1);
@@ -127,8 +127,8 @@ public class DynamicGrid extends GridRender implements Runnable {
                         continue;
 
                     Matrix4f matrix4f = createUITransformationMatrix(
-                            xOffset + (x - 3f + hold.xOffsetRatio) * xCoord * 2,
-                            yOffset + (y + 15.25f - hold.yOffsetRatio) * yCoord * 2);
+                            GV.xOffset + (x - 3f + hold.xOffsetRatio) * GV.xCoord * 2,
+                            GV.yOffset + (y + 15.25f - hold.yOffsetRatio) * GV.yCoord * 2);
 
                     shader.setTitleIndex(renderIndex);
 
@@ -148,8 +148,8 @@ public class DynamicGrid extends GridRender implements Runnable {
                         continue;
 
                     Matrix4f matrix4f = createUITransformationMatrix(
-                            xOffset + (x + 13 + currentPreview.xOffsetRatio) * xCoord * 2,
-                            yOffset + (y + (i * 3) - currentPreview.yOffsetRatio) * yCoord * 2);
+                            GV.xOffset + (x + 13 + currentPreview.xOffsetRatio) * GV.xCoord * 2,
+                            GV.yOffset + (y + (i * 3) - currentPreview.yOffsetRatio) * GV.yCoord * 2);
 
                     shader.setTitleIndex(currentPreview.t - 1);
 
@@ -383,6 +383,7 @@ public class DynamicGrid extends GridRender implements Runnable {
         gravityTimer += deltaFrametime;
         movementTimer += deltaFrametime;
         staticGrid.visibility = resetTimer;
+        staticGrid.visibilityText -= Math.max(deltaFrametime / 2, 0);
 
     }
 
@@ -446,7 +447,6 @@ public class DynamicGrid extends GridRender implements Runnable {
             return false;
         }
     }
-
 
     public void placeTetromino() {
         for (int y = 0; y < tetromino.gridSize; y++) {

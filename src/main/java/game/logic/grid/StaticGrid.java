@@ -5,14 +5,19 @@ import org.lwjgl.opengl.GL40;
 
 import engine.ObjectLoader;
 import engine.Renderer;
+import engine.font.Font;
+import game.GV;
 import game.object.grid.GridRender;
 
 public class StaticGrid extends GridRender implements Runnable {
     Thread thread = new Thread(this);
     public DynamicGrid dynamicGrid;
 
-    public StaticGrid(ObjectLoader objectLoader, Renderer renderer) throws Exception {
+    Font font;
+
+    public StaticGrid(ObjectLoader objectLoader, Renderer renderer, Font font) throws Exception {
         super(objectLoader, renderer);
+        this.font = font;
     }
 
     int gridLogic[][] = new int[40][10];
@@ -20,6 +25,8 @@ public class StaticGrid extends GridRender implements Runnable {
     public void reset() {
         gridLogic = new int[40][10];
         score = 0;
+        B2B = false;
+        TSpin = false;
     }
 
     private int score = 0;
@@ -41,12 +48,15 @@ public class StaticGrid extends GridRender implements Runnable {
     };
 
     float visibility;
+    String clearText = "";
+    float visibilityText;
 
     @Override
     protected void renderGrid() {
         for (int y = 0; y < 24; y++) {
             for (int x = 0; x < 10; x++) {
-                Matrix4f matrix4f = createUITransformationMatrix(xOffset + x * xCoord * 2, yOffset + y * yCoord * 2);
+                Matrix4f matrix4f = createUITransformationMatrix(GV.xOffset + x * GV.xCoord * 2,
+                        GV.yOffset + y * GV.yCoord * 2);
 
                 shader.setVisibility(1f);
                 if (gridLogic[y][x] == 0)
@@ -58,7 +68,11 @@ public class StaticGrid extends GridRender implements Runnable {
                 GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, grid.vertexCount);
             }
         }
-
+        font.renderStart();
+        font.renderText(clearText, GV.xCoord * 12, GV.yCoord, visibilityText);
+        font.renderText("Score", GV.xCoord * 12, -GV.yCoord * 16, 1);
+        font.renderText(score + "", GV.xCoord * 12, -GV.yCoord * 19, 1);
+        font.renderStop();
     }
 
     boolean TSpin;
@@ -66,18 +80,17 @@ public class StaticGrid extends GridRender implements Runnable {
     boolean B2B = false;
 
     public void softDrop() {
-        // score -= (dynamicGrid.yDynamicCoord - dynamicGrid.yStaticCoord) *
-        // scoreTable[11];
+        score -= (dynamicGrid.yDynamicCoord - dynamicGrid.yStaticCoord) *
+                scoreTable[11];
     }
 
     public void hardDrop() {
-        // score += (dynamicGrid.yStaticCoord - dynamicGrid.staticGhostHeight) *
-        // scoreTable[12];
+        score += (dynamicGrid.yStaticCoord - dynamicGrid.staticGhostHeight) *
+                scoreTable[12];
     }
 
     @Override
     public void run() {
-        // System.out.println(score);
         int i = 0;
         int offset = 0;
         int clearAmount = 0;
@@ -100,58 +113,58 @@ public class StaticGrid extends GridRender implements Runnable {
 
         } while (i++ < 22);
 
-        // if (dynamicGrid.placeTetromino) {
         scoreCalculate(clearAmount);
         dynamicGrid.nextPiece();
         dynamicGrid.resetPiece();
-        System.out.println(score);
-        // }
     }
 
     public void scoreCalculate(int clearAmount) {
         if (TSpin) {
+            visibilityText = 2;
+
             if (B2B && clearAmount != 0)
                 clearAmount += 3;
             switch (clearAmount) {
                 case 0:
-                    System.out.println("Mini TSpin");
+                    clearText = ("Mini TSpin");
                     score += scoreTable[0];
                     B2B = true;
                     return;
                 case 1:
-                    System.out.println("TSpin Single");
+                    clearText = ("TSpin Single");
                     score += scoreTable[6];
                     B2B = true;
                     return;
                 case 4:
-                    System.out.println("B2B TSpin Single");
+                    clearText = ("B2B TSpin Single");
                     score += scoreTable[7];
                     B2B = true;
                     return;
                 case 2:
                     score += scoreTable[7];
                     B2B = true;
-                    System.out.println("TSpin Double");
+                    clearText = ("TSpin Double");
                     return;
                 case 3:
                     score += scoreTable[8];
                     B2B = true;
-                    System.out.println("TSpin Triple");
+                    clearText = ("TSpin Triple");
                     return;
                 case 5:
                     score += scoreTable[9];
                     B2B = true;
-                    System.out.println("B2B TSpin Double");
+                    clearText = ("B2B TSpin Double");
                     return;
                 case 6:
                     score += scoreTable[10];
                     B2B = true;
-                    System.out.println("B2B TSpin Triple");
+                    clearText = ("B2B TSpin Triple");
                     return;
 
             }
             B2B = true;
             TSpin = false;
+
             return;
         }
 
@@ -159,29 +172,38 @@ public class StaticGrid extends GridRender implements Runnable {
             case 1:
                 score += scoreTable[0];
                 B2B = false;
-                System.out.println("Single");
+                clearText = ("Single");
+                visibilityText = 2;
+
                 return;
             case 2:
                 score += scoreTable[2];
                 B2B = false;
-                System.out.println("Double");
+                clearText = ("Double");
+                visibilityText = 2;
+
                 return;
             case 3:
                 score += scoreTable[4];
                 B2B = false;
-                System.out.println("Triple");
+                clearText = ("Triple");
+                visibilityText = 2;
+
                 return;
             case 4:
                 if (B2B) {
-                    System.out.println("B2B TETRIS");
+                    clearText = ("B2B TETRIS");
                     score += scoreTable[7];
+                    visibilityText = 2;
                     return;
                 }
-                System.out.println("TETRIS");
+                clearText = ("TETRIS");
+                visibilityText = 2;
 
                 score += scoreTable[6];
                 B2B = true;
                 return;
+
         }
     }
 

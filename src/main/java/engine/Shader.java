@@ -49,7 +49,7 @@ public abstract class Shader {
         return GL40.glGetUniformLocation(programID, unifromName);
     }
 
-    protected void unifromMatrix(int location, Matrix4f matrix) {
+    public void unifromMatrix(int location, Matrix4f matrix) {
         matrix.get(matrixBuffer);
         GL40.glUniformMatrix4fv(location, false, matrixBuffer);
     }

@@ -16,18 +16,6 @@ public abstract class GridRender {
     // logic run on 10*40 grid, render 10*20 grid
     protected final float o12 = (float) 1 / 12;
 
-    protected final float h = (GV.height * 2);
-    protected final float w = (GV.width * 2);
-    protected final float r = 1 / (w * 20);
-
-    protected float titleScale = .7f;
-
-    protected final float xCoord = (h * r) * titleScale;
-    protected final float yCoord = (w * r) * titleScale;
-
-    protected final float xOffset = -xCoord * 9;
-    protected final float yOffset = -yCoord * 20;
-
     protected float[] textureCoordinates = {
             0, 0,
             0, 1,
@@ -36,10 +24,10 @@ public abstract class GridRender {
     };
 
     protected final float[] vertices = {
-            -xCoord, yCoord,
-            -xCoord, -yCoord,
-            xCoord, yCoord,
-            xCoord, -yCoord,
+            -GV.xCoord, GV.yCoord,
+            -GV.xCoord, -GV.yCoord,
+            GV.xCoord, GV.yCoord,
+            GV.xCoord, -GV.yCoord,
     };
 
     public void render() {

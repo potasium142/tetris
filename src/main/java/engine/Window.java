@@ -40,18 +40,16 @@ public class Window {
 
         GLFW.glfwMakeContextCurrent(window);
 
-        GLFW.glfwSwapInterval(1);
+        // GLFW.glfwSwapInterval(1);
 
         GLFW.glfwShowWindow(window);
 
         GL.createCapabilities();
-
         GL40.glEnable(GL40.GL_STENCIL_TEST);
-        // GL40.glEnable(GL40.GL_CULL_FACE);
-        // GL40.glCullFace(GL40.GL_BACK);
 
         System.out.println("\nWindow created");
         System.out.println("Resolution : " + this.width + "x" + this.height);
+
     }
 
     public void update() {

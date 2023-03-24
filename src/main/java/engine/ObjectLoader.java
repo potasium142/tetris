@@ -34,7 +34,7 @@ public class ObjectLoader {
         return new Object(vaoID, vertices.length / 2);
     }
 
-    public Object loadMesh3D(float[] vertices, int indices[], float[] textureCoordinates) {
+    public Object loadMeshIndices(float[] vertices, int indices[], float[] textureCoordinates) {
         int vaoID = GL40.glGenVertexArrays();
         int vboID = GL40.glGenBuffers();
         vaos.add(vaoID);

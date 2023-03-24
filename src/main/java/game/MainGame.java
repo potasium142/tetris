@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL40;
 import engine.ObjectLoader;
 import engine.Renderer;
 import engine.Window;
+import engine.font.Font;
 import game.logic.grid.BackgroundGrid;
 import game.logic.grid.DynamicGrid;
 import game.logic.grid.StaticGrid;
@@ -29,7 +30,8 @@ public class MainGame {
         Background background = new Background(loader, renderer);
         TopOutScreen tos = new TopOutScreen(loader, renderer);
 
-        StaticGrid staticGrid = new StaticGrid(loader, renderer);
+        Font font = new Font(loader);
+        StaticGrid staticGrid = new StaticGrid(loader, renderer, font);
         DynamicGrid dynamicGrid = new DynamicGrid(loader, renderer, staticGrid, window);
         BackgroundGrid backgroundGrid = new BackgroundGrid(loader, renderer, staticGrid);
         UI border = new UI(loader);
@@ -49,6 +51,7 @@ public class MainGame {
                 backgroundGrid.render();
                 staticGrid.render();
                 dynamicGrid.render();
+
                 if (!dynamicGrid.logicRunning) {
                     tos.render();
                 }

@@ -2,37 +2,40 @@ package game.object.UI;
 
 import engine.Object;
 import engine.ObjectLoader;
+import engine.Shader;
 import game.GV;
 import game.UI.UIRender;
-import game.UI.UIShader;
 
 public class UI {
 
-    UIShader shader;
+    Shader shader;
 
     public UIRender renderer;
 
     Object UI;
 
     public UI(ObjectLoader objectLoader) throws Exception {
-        shader = new UIShader("./src/main/java/game/object/UI/uiVert.vert",
-                "./src/main/java/game/object/UI/uiFrag.frag");
-        UI = objectLoader.loadMesh3D(vertices, indices, textureCoordinates);
+        shader = new Shader("./src/main/java/game/object/UI/uiVert.vert",
+                "./src/main/java/game/object/UI/uiFrag.frag") {
+
+            @Override
+            public void bindAttribute() {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void initUnifrom() {
+                // TODO Auto-generated method stub
+            }
+
+        };
+        UI = objectLoader.loadMeshIndices(vertices, indices, textureCoordinates);
         UI.textureID = objectLoader.loadTexture(GV.queuePath)[0];
         renderer = new UIRender(shader, UI);
     }
 
-    protected final float h = (GV.height * 2);
-    protected final float w = (GV.width * 2);
-    protected final float r = 1 / (w * 20);
-
-    protected float titleScale = .7f;
-
-    protected final float xCoord = (h * r) * titleScale;
-    protected final float yCoord = (w * r) * titleScale;
-
-    protected final float xOffset = xCoord * 16;
-    protected final float yOffset = yCoord * 22;
+    protected final float xOffset = GV.xCoord * 16;
+    protected final float yOffset = GV.yCoord * 22;
 
     protected float[] textureCoordinates = {
             .93f, 0,
@@ -45,10 +48,10 @@ public class UI {
             0f, .1835f,
             0f, .157f,
 
-            .93f, .1855f,
+            .93f, .1832f,
             .93f, .2773f,
             0, .2773f,
-            0, .1855f,
+            0, .1832f,
 
             .93f, .289f,
             .93f, .15f + .289f,
@@ -60,10 +63,10 @@ public class UI {
             0f, .1835f + .289f,
             0f, .157f + .289f,
 
-            .93f, .1855f + .289f,
+            .93f, .1832f + .289f,
             .93f, .2773f + .289f,
             0, .2773f + .289f,
-            0, .1855f + .289f,
+            0, .1832f + .289f,
 
     };
 
@@ -84,7 +87,7 @@ public class UI {
     };
 
     protected final float[] queueVertex = {
-            xCoord * 6, xCoord * 12 * .16f, xCoord * 12 * .1f,
+            GV.xCoord * 6, GV.xCoord * 12 * .16f, GV.xCoord * 12 * .1f,
     };
 
     protected final float[] vertices = {
@@ -97,15 +100,15 @@ public class UI {
 
             // Next border
             queueVertex[0] + xOffset, -queueVertex[1] + yOffset, // top right
-            queueVertex[0] + xOffset, -queueVertex[1] + yOffset - xCoord * 55, // bottom left
-            -queueVertex[0] + xOffset, -queueVertex[1] + yOffset - xCoord * 55, // bottom right
+            queueVertex[0] + xOffset, -queueVertex[1] + yOffset - GV.yCoord * 32, // bottom left
+            -queueVertex[0] + xOffset, -queueVertex[1] + yOffset - GV.yCoord * 32, // bottom right
             -queueVertex[0] + xOffset, -queueVertex[1] + yOffset, // top left
 
             // Next border
-            queueVertex[0] + xOffset, -queueVertex[1] + yOffset - xCoord * 55, // top right
-            queueVertex[0] + xOffset, -queueVertex[2] * 4 + yOffset - xCoord * 55, // bottom left
-            -queueVertex[0] + xOffset, -queueVertex[2] * 4 + yOffset - xCoord * 55, // bottom right
-            -queueVertex[0] + xOffset, -queueVertex[1] + yOffset - xCoord * 55, // top left
+            queueVertex[0] + xOffset, -queueVertex[1] + yOffset - GV.yCoord * 32, // top right
+            queueVertex[0] + xOffset, -queueVertex[2] * 4 + yOffset - GV.yCoord * 32, // bottom left
+            -queueVertex[0] + xOffset, -queueVertex[2] * 4 + yOffset - GV.yCoord * 32, // bottom right
+            -queueVertex[0] + xOffset, -queueVertex[1] + yOffset - GV.yCoord * 32, // top left
 
             // Hold
             // Next slot
@@ -116,14 +119,14 @@ public class UI {
 
             // Next border
             queueVertex[0] - xOffset, -queueVertex[1] + yOffset, // top right
-            queueVertex[0] - xOffset, -queueVertex[1] + yOffset - xCoord * 10, // bottom left
-            -queueVertex[0] - xOffset, -queueVertex[1] + yOffset - xCoord * 10, // bottom right
+            queueVertex[0] - xOffset, -queueVertex[1] + yOffset - GV.yCoord * 7, // bottom left
+            -queueVertex[0] - xOffset, -queueVertex[1] + yOffset - GV.yCoord * 7, // bottom right
             -queueVertex[0] - xOffset, -queueVertex[1] + yOffset, // top left
 
             // Next border
-            queueVertex[0] - xOffset, -queueVertex[1] + yOffset - xCoord * 10, // top right
-            queueVertex[0] - xOffset, -queueVertex[2] * 3 + yOffset - xCoord * 10, // bottom left
-            -queueVertex[0] - xOffset, -queueVertex[2] * 3 + yOffset - xCoord * 10, // bottom right
-            -queueVertex[0] - xOffset, -queueVertex[1] + yOffset - xCoord * 10, // top left
+            queueVertex[0] - xOffset, -queueVertex[1] + yOffset - GV.yCoord * 7, // top right
+            queueVertex[0] - xOffset, -queueVertex[2] * 3 + yOffset - GV.yCoord * 7, // bottom left
+            -queueVertex[0] - xOffset, -queueVertex[2] * 3 + yOffset - GV.yCoord * 7, // bottom right
+            -queueVertex[0] - xOffset, -queueVertex[1] + yOffset - GV.yCoord * 7, // top left
     };
 }

@@ -16,9 +16,6 @@ public class Renderer {
         GL40.glBlendFunc(GL40.GL_SRC_ALPHA, GL40.GL_ONE_MINUS_SRC_ALPHA);
         GL40.glActiveTexture(GL40.GL_TEXTURE);
         GL40.glBindTexture(GL40.GL_TEXTURE_2D, mesh.textureID);
-        // GL40.glDrawElements(GL40.GL_TRIANGLES, mesh.vertexCount,
-        // GL40.GL_UNSIGNED_INT, 0);
-
         GL40.glDrawArrays(GL40.GL_TRIANGLE_STRIP, 0, mesh.vertexCount);
 
         GL40.glDisableVertexAttribArray(0);
